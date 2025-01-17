@@ -20,6 +20,12 @@ function setupEventListeners() {
         e.preventDefault();
         updateTask();
     });
+
+    // Filter form submission
+    document.querySelector('#listView form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        filterTasks();
+    });
 }
 
 // View management
@@ -42,10 +48,12 @@ function showView(viewName) {
 function createTask() {
     const form = document.querySelector('#createView form');
     const task = {
-        id: Date.now(),
+        id: Date.now(), // Simple way to generate unique IDs
         title: form.title.value,
         description: form.description.value,
-        dueDate: form.due_date.value
+        dueDate: form.due_date.value,
+        status: 'pending',
+        createdAt: new Date().toISOString()
     };
 
     tasks.push(task);
@@ -77,7 +85,8 @@ function updateTask() {
         ...tasks[taskIndex],
         title: form.edit_title.value,
         description: form.edit_description.value,
-        dueDate: form.edit_due_date.value
+        dueDate: form.edit_due_date.value,
+        updatedAt: new Date().toISOString()
     };
 
     form.reset();
@@ -91,18 +100,55 @@ function deleteTask(taskId) {
     }
 }
 
-function renderTasks() {
+function toggleTaskStatus(taskId) {
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) return;
+
+    tasks[taskIndex].status = tasks[taskIndex].status === 'completed' ? 'pending' : 'completed';
+    renderTasks();
+}
+
+// Filter and render tasks
+function filterTasks() {
+    const searchTerm = document.querySelector('input[name="search"]').value.toLowerCase();
+    const filterValue = document.querySelector('select[name="filter"]').value;
+
+    renderTasks(searchTerm, filterValue);
+}
+
+function renderTasks(searchTerm = '', filterValue = '') {
     const taskContainer = document.querySelector('#listView .row .col-md-9 .row');
-    
-    taskContainer.innerHTML = tasks.map(task => `
+    let filteredTasks = [...tasks];
+
+    // Apply filters
+    if (searchTerm) {
+        filteredTasks = filteredTasks.filter(task => 
+            task.title.toLowerCase().includes(searchTerm) || 
+            task.description.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    if (filterValue) {
+        filteredTasks = filteredTasks.filter(task => 
+            (filterValue === 'completed' && task.status === 'completed') ||
+            (filterValue === 'incomplete' && task.status === 'pending')
+        );
+    }
+
+    // Generate HTML for tasks
+    taskContainer.innerHTML = filteredTasks.map(task => `
         <div class="col-md-6 mb-4">
-            <div class="card">
+            <div class="card ${task.status === 'completed' ? 'bg-light' : ''}">
                 <div class="card-body">
                     <h5 class="card-title">${task.title}</h5>
                     <p class="card-text">${task.description}</p>
                     <p class="card-text"><strong>Due Date:</strong> ${task.dueDate}</p>
+                    <p class="card-text"><strong>Status:</strong> ${task.status}</p>
                     <button onclick="editTask(${task.id})" class="btn btn-warning btn-sm">Edit</button>
                     <button onclick="deleteTask(${task.id})" class="btn btn-danger btn-sm">Delete</button>
+                    <button onclick="toggleTaskStatus(${task.id})" class="btn btn-info btn-sm">
+                        ${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Completed'}
+                    </button>
                 </div>
             </div>
         </div>
