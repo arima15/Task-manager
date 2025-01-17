@@ -10,11 +10,11 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="index.html">Task Manager</a>
+            <a class="navbar-brand" href="#" onclick="showView('list')">Task Manager</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="create.html">Add Task</a>
+                        <a class="nav-link" href="#" onclick="showView('create')">Add Task</a>
                     </li>
                 </ul>
             </div>
@@ -22,44 +22,90 @@
     </header>
 
     <main class="container mt-5">
-        <div class="row">
-            <!-- Filter Section -->
-            <div class="col-md-3">
-                <h4>Filter Tasks</h4>
-                <form class="mb-4">
-                    <div class="mb-3">
-                        <input type="text" name="search" class="form-control" placeholder="Search tasks...">
-                    </div>
-                    <div class="mb-3">
-                        <select name="filter" class="form-select">
-                            <option value="">All</option>
-                            <option value="completed">Completed</option>
-                            <option value="incomplete">Incomplete</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
-                </form>
-            </div>
+        <!-- List View -->
+        <div id="listView">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>Filter Tasks</h4>
+                    <form class="mb-4" onsubmit="return false;">
+                        <div class="mb-3">
+                            <input type="text" name="search" class="form-control" placeholder="Search tasks...">
+                        </div>
+                        <div class="mb-3">
+                            <select name="filter" class="form-select">
+                                <option value="">All</option>
+                                <option value="completed">Completed</option>
+                                <option value="incomplete">Incomplete</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
 
-            <!-- Tasks List Section -->
-            <div class="col-md-9">
-                <h2 class="text-center">Task List</h2>
-                <div class="row">
-                    <!-- Sample Task Card -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Sample Task</h5>
-                                <p class="card-text"><strong>Due Date:</strong> 2024-03-20</p>
-                                <p class="card-text"><strong>Status:</strong> Pending</p>
-                                <a href="edit.html" class="btn btn-warning btn-sm">Edit</a>
-                                <button class="btn btn-danger btn-sm">Delete</button>
-                                <button class="btn btn-info btn-sm">Mark as Completed</button>
+                <div class="col-md-9">
+                    <h2 class="text-center">Task List</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sample Task</h5>
+                                    <p class="card-text"><strong>Due Date:</strong> 2024-03-20</p>
+                                    <p class="card-text"><strong>Status:</strong> Pending</p>
+                                    <button onclick="editTask(1)" class="btn btn-warning btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                    <button class="btn btn-info btn-sm">Mark as Completed</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <button onclick="showView('create')" class="btn btn-success mt-3">Add New Task</button>
                 </div>
-                <a href="create.html" class="btn btn-success mt-3">Add New Task</a>
+            </div>
+        </div>
+
+        <!-- Create View -->
+        <div id="createView" style="display: none;">
+            <div class="container">
+                <h2>Add New Task</h2>
+                <form onsubmit="return false;">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title:</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea name="description" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Due Date:</label>
+                        <input type="date" name="due_date" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Task</button>
+                    <button type="button" onclick="showView('list')" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit View -->
+        <div id="editView" style="display: none;">
+            <div class="container">
+                <h2>Edit Task</h2>
+                <form onsubmit="return false;">
+                    <div class="mb-3">
+                        <label for="edit_title" class="form-label">Title:</label>
+                        <input type="text" name="edit_title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Description:</label>
+                        <textarea name="edit_description" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_due_date" class="form-label">Due Date:</label>
+                        <input type="date" name="edit_due_date" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Task</button>
+                    <button type="button" onclick="showView('list')" class="btn btn-secondary">Cancel</button>
+                </form>
             </div>
         </div>
     </main>
@@ -67,5 +113,26 @@
     <footer class="text-center mt-5">
         <p>&copy; 2024 Task Manager</p>
     </footer>
+
+    <script>
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('createView').style.display = 'none';
+            document.getElementById('editView').style.display = 'none';
+            
+            // Show selected view
+            document.getElementById(viewName + 'View').style.display = 'block';
+        }
+
+        function editTask(taskId) {
+            // Here you would normally fetch task data based on taskId
+            // For now, we'll just show the edit view
+            showView('edit');
+        }
+
+        // Show list view by default
+        showView('list');
+    </script>
 </body>
 </html>
