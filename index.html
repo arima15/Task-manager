@@ -114,25 +114,6 @@
         <p>&copy; 2024 Task Manager</p>
     </footer>
 
-    <script>
-        function showView(viewName) {
-            // Hide all views
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('createView').style.display = 'none';
-            document.getElementById('editView').style.display = 'none';
-            
-            // Show selected view
-            document.getElementById(viewName + 'View').style.display = 'block';
-        }
-
-        function editTask(taskId) {
-            // Here you would normally fetch task data based on taskId
-            // For now, we'll just show the edit view
-            showView('edit');
-        }
-
-        // Show list view by default
-        showView('list');
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
